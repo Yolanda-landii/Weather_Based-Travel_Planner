@@ -1,7 +1,6 @@
-// HomePage.js
 import React, { useState } from 'react';
 import Header from '../components/Header';
-import SearchBar from '../components/SearchBar';
+import DestinationSearch from '../components/DestinationSearch';
 import Button from '../components/Button';
 import WeatherCard from '../components/WeatherCard';
 import ActivitiesCard from '../components/ActivitiesCard';
@@ -14,7 +13,6 @@ const HomePage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Form state to store input data
     const [formData, setFormData] = useState({
         location: '',
         destination: '',
@@ -22,7 +20,7 @@ const HomePage = () => {
         time: '',
     });
 
-    // Handle form input changes
+    // Handle input changes for regular fields
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevState) => ({
@@ -31,14 +29,22 @@ const HomePage = () => {
         }));
     };
 
-    // Fetch weather and activity info when form is submitted
+    // Update location and destination from DestinationSearch
+    const handleSearchUpdate = (name, value) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+    };
+
+    // Fetch data on form submission
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
-            const weatherResponse = await axios.get(`/api/weather`, {
+            const weatherResponse = await axios.get('/api/weather', {
                 params: {
                     location: formData.location,
                     destination: formData.destination,
@@ -48,14 +54,14 @@ const HomePage = () => {
             });
             setWeatherData(weatherResponse.data);
 
-            const activityResponse = await axios.get(`/api/activities`, {
+            const activityResponse = await axios.get('/api/activities', {
                 params: {
                     destination: formData.destination,
                 },
             });
             setActivityData(activityResponse.data);
         } catch (err) {
-            setError("Error fetching data, please try again.");
+            setError('Error fetching data, please try again.');
         } finally {
             setLoading(false);
         }
@@ -70,19 +76,17 @@ const HomePage = () => {
                     <input
                         type="text"
                         name="location"
+                        placeholder="Enter your current location"
                         value={formData.location}
                         onChange={handleInputChange}
-                        required
                     />
                 </div>
                 <div className="input-group">
                     <label htmlFor="destination">Destination:</label>
-                    <input
-                        type="text"
-                        name="destination"
+                    <DestinationSearch
+                        placeholder="Enter your destination"
                         value={formData.destination}
-                        onChange={handleInputChange}
-                        required
+                        onSearch={(value) => handleSearchUpdate('destination', value)}
                     />
                 </div>
                 <div className="input-group">
