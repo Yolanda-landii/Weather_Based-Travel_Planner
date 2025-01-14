@@ -8,7 +8,7 @@ const WeatherCardContainer = styled.div`
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
   width: 100%;
   max-width: 500px;
-  margin-top: 20px;
+  margin-top: 21px;
   color: #fff;
 `;
 
