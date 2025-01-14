@@ -1,26 +1,21 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import DestinationSearch from '../components/DestinationSearch';
 import Button from '../components/Button';
-import WeatherCard from '../components/WeatherCard';
-import ActivitiesCard from '../components/ActivitiesCard';
 import Footer from '../components/Footer';
 import axios from 'axios';
 
 const HomePage = () => {
     const [weatherData, setWeatherData] = useState(null);
-    const [activityData, setActivityData] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-
     const [formData, setFormData] = useState({
         location: '',
         destination: '',
         date: '',
-        time: '',
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
-    // Handle input changes for regular fields
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevState) => ({
@@ -29,43 +24,38 @@ const HomePage = () => {
         }));
     };
 
-    // Update location and destination from DestinationSearch
-    const handleSearchUpdate = (name, value) => {
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: value,
-        }));
+    const isFormValid = () => {
+        return formData.location && formData.destination && formData.date;
     };
-
-    // Fetch data on form submission
     const handleFormSubmit = async (e) => {
         e.preventDefault();
+        if (!isFormValid()) {
+            setError('Please fill out all fields.');
+            return;
+        }
+    
         setLoading(true);
         setError(null);
-
+    
         try {
-            const weatherResponse = await axios.get('/api/weather', {
+            // Pass destination as a query parameter
+            const weatherResponse = await axios.get(`http://localhost:5000/api/weather/${formData.location}`, {
                 params: {
-                    location: formData.location,
-                    destination: formData.destination,
+                    destination: formData.destination,  
                     date: formData.date,
-                    time: formData.time,
                 },
             });
+    
             setWeatherData(weatherResponse.data);
-
-            const activityResponse = await axios.get('/api/activities', {
-                params: {
-                    destination: formData.destination,
-                },
-            });
-            setActivityData(activityResponse.data);
+            navigate('/weather-info', { state: { weatherData: weatherResponse.data } });
         } catch (err) {
             setError('Error fetching data, please try again.');
         } finally {
             setLoading(false);
         }
     };
+    
+    
 
     return (
         <div className="Main">
@@ -79,14 +69,18 @@ const HomePage = () => {
                         placeholder="Enter your current location"
                         value={formData.location}
                         onChange={handleInputChange}
+                        required
                     />
                 </div>
                 <div className="input-group">
                     <label htmlFor="destination">Destination:</label>
-                    <DestinationSearch
+                    <input
+                        type="text"
+                        name="destination"
                         placeholder="Enter your destination"
                         value={formData.destination}
-                        onSearch={(value) => handleSearchUpdate('destination', value)}
+                        onChange={handleInputChange}
+                        required
                     />
                 </div>
                 <div className="input-group">
@@ -99,24 +93,11 @@ const HomePage = () => {
                         required
                     />
                 </div>
-                <div className="input-group">
-                    <label htmlFor="time">Departure Time:</label>
-                    <input
-                        type="time"
-                        name="time"
-                        value={formData.time}
-                        onChange={handleInputChange}
-                        required
-                    />
-                </div>
-                <Button color="primary" label="Get Info" onClick={handleFormSubmit} />
+                <Button type="submit" color="primary" label="Get Info" />
             </form>
 
             {loading && <div>Loading...</div>}
-            {error && <div>{error}</div>}
-
-            {weatherData && <WeatherCard data={weatherData} />}
-            {activityData && <ActivitiesCard data={activityData} />}
+            {error && <div className="error">{error}</div>}
 
             <Footer />
         </div>

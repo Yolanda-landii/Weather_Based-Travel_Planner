@@ -1,30 +1,46 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const DestinationSearch = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLocationSearch, setIsLocationSearch] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
 
-  const handleInputChange = (e) => {
-    setSearchTerm(e.target.value);
+  // Handle input changes and fetch auto-complete suggestions
+  const handleInputChange = async (e) => {
+    const query = e.target.value;
+    setSearchTerm(query);
+
+    if (query.length > 2) {
+      try {
+        const response = await axios.get(`/api/autoComplete`, {
+          params: { query },
+        });
+        setSuggestions(response.data.suggestions || []); // Update suggestions
+      } catch (err) {
+        console.error('Error fetching suggestions:', err);
+      }
+    } else {
+      setSuggestions([]);
+    }
   };
 
-  const handleSearch = (e) => {
+  // Handle form submission
+  const handleSearch = async (e) => {
     e.preventDefault();
-    if (isLocationSearch) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          console.log(`Searching for location at lat: ${latitude}, lon: ${longitude}`);
-          onSearch({ type: 'location', latitude, longitude });
-        },
-        (error) => {
-          console.error('Geolocation error:', error);
-        }
-      );
-    } else {
-      console.log(`Searching for destination: ${searchTerm}`);
-      onSearch({ type: 'city', cityName: searchTerm });
+    try {
+      const response = await axios.get(`/api/search`, {
+        params: { query: searchTerm },
+      });
+      onSearch(response.data); // Return full search result to parent
+    } catch (err) {
+      console.error('Error fetching destination:', err);
     }
+  };
+
+  // Handle suggestion click
+  const handleSuggestionClick = (suggestion) => {
+    setSearchTerm(suggestion);
+    setSuggestions([]);
   };
 
   return (
@@ -34,38 +50,45 @@ const DestinationSearch = ({ onSearch }) => {
           type="text"
           value={searchTerm}
           onChange={handleInputChange}
-          placeholder={isLocationSearch ? "Finding current location..." : "Search for a destination..."}
+          placeholder="Search for a destination..."
           className="search-input"
+          autoComplete="off"
         />
         <button type="submit" className="search-button">
           Search
         </button>
       </form>
-      <div>
-        <button
-          className={`toggle-location-button ${isLocationSearch ? 'active' : ''}`}
-          onClick={() => setIsLocationSearch((prev) => !prev)}
-        >
-          {isLocationSearch ? 'Search by City' : 'Use Current Location'}
-        </button>
-      </div>
+
+      {/* Auto-complete suggestions */}
+      {suggestions.length > 0 && (
+        <ul className="suggestions-list">
+          {suggestions.map((suggestion, index) => (
+            <li
+              key={index}
+              onClick={() => handleSuggestionClick(suggestion)}
+              className="suggestion-item"
+            >
+              {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
+
       <style jsx>{`
         .destination-search {
           display: flex;
-          justify-content: center;
+          flex-direction: column;
           align-items: center;
           margin: 20px;
         }
-
         .search-input {
           padding: 10px;
           font-size: 16px;
           width: 250px;
           border: 1px solid #ccc;
           border-radius: 5px;
-          margin-right: 10px;
+          margin-bottom: 10px;
         }
-
         .search-button {
           padding: 10px 20px;
           background-color: #004aad;
@@ -75,27 +98,25 @@ const DestinationSearch = ({ onSearch }) => {
           cursor: pointer;
           font-size: 16px;
         }
-
-        .search-button:hover {
-          background-color: #00357d;
+        .suggestions-list {
+          list-style: none;
+          padding: 0;
+          margin: 10px 0 0;
+          width: 250px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          background: white;
         }
-
-        .toggle-location-button {
-          margin-top: 10px;
-          background: none;
-          border: none;
-          color: #004aad;
-          font-size: 14px;
+        .suggestion-item {
+          padding: 10px;
           cursor: pointer;
-          padding: 5px;
         }
-
-        .toggle-location-button.active {
-          color: #00357d;
+        .suggestion-item:hover {
+          background-color: #f4f4f4;
         }
       `}</style>
     </div>
   );
 };
 
-export default DestinationSearch;
+export default DestinationSearch; 
