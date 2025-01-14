@@ -1,9 +1,10 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const WeatherInfo = () => {
   const location = useLocation();
   const weatherData = location.state?.weatherData;
+  const navigate = useNavigate();
 
   if (!weatherData) {
     return <div>No weather data available.</div>;
@@ -41,7 +42,7 @@ const WeatherInfo = () => {
         )}
       </div>
 
-      <button onClick={() => window.open(`https://www.google.com/maps?q=${weatherData.coordinates.lat},${weatherData.coordinates.lon}`, '_blank')}>
+      <button onClick={() => navigate('/map-view', { state: { weatherData } })}>
         View on Map
       </button>
     </div>

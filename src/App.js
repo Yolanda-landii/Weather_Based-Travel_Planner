@@ -1,17 +1,19 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/Home'; 
-import WeatherInfo from './pages/WeatherInfo'; 
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './pages/Home';
+import WeatherInfo from './pages/WeatherInfo';
+import MapView from './components/MapView';
 
 const App = () => {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/weather-info" element={<WeatherInfo />} />
-            </Routes>
-        </Router>
-    );
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/weather-info" element={<WeatherInfo />} />
+        <Route path="/map-view" element={<MapView />} />
+      </Routes>
+    </Router>
+  );
 };
 
 export default App;
