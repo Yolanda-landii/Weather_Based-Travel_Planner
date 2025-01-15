@@ -12,8 +12,8 @@ const WeatherCard = ({ date, temperature, condition }) => {
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
     width: '200px',
     textAlign: 'center',
-    transition: 'transform 0.3s ease-in-out', // Smooth transition
-    transform: isHovered ? 'scale(1.1)' : 'scale(1)', // Scale effect when hovered
+    transition: 'transform 0.3s ease-in-out', 
+    transform: isHovered ? 'scale(1.1)' : 'scale(1)', 
   };
 
   return (
