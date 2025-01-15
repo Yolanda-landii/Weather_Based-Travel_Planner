@@ -1,36 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 const activitiesData = {
   hot: {
     minTemp: 30,
     maxTemp: 50,
-    activities: [
-      { name: 'Swimming', image: 'swimming_image_url' },
-      { name: 'Beach Volleyball', image: 'volleyball_image_url' },
-    ],
+    activities: ['Swimming', 'Beach Volleyball'],
   },
   warm: {
     minTemp: 20,
     maxTemp: 29,
-    activities: [
-      { name: 'Hiking', image: 'hiking_image_url' },
-      { name: 'Cycling', image: 'cycling_image_url' },
-    ],
+    activities: ['Hiking', 'Cycling'],
   },
   cold: {
     minTemp: 0,
     maxTemp: 19,
-    activities: [
-      { name: 'Skiing', image: 'skiing_image_url' },
-      { name: 'Hot Chocolate by the Fire', image: 'hot_chocolate_image_url' },
-    ],
+    activities: ['Skiing', 'Hot Chocolate by the Fire'],
   },
 };
+
+const API_KEY = 'WfLrkPfJlfRNrmTNK8xGjrtdnWUnKwdZD2OmoKEPxPZGAT6mJzcvvKS6';
 
 const ActivitiesPage = () => {
   const location = useLocation();
   const { weatherCondition, temperature } = location.state || {};
+  const [activities, setActivities] = useState([]);
+  const [images, setImages] = useState({});
 
   const getActivitiesForWeather = (temp) => {
     for (const [key, value] of Object.entries(activitiesData)) {
@@ -41,10 +37,28 @@ const ActivitiesPage = () => {
     return [];
   };
 
-  const activities = getActivitiesForWeather(temperature);
+  useEffect(() => {
+    if (temperature) {
+      const activityList = getActivitiesForWeather(temperature);
+      setActivities(activityList);
+
+      activityList.forEach((activity) => {
+        axios
+          .get('https://api.pexels.com/v1/search', {
+            headers: { Authorization: API_KEY },
+            params: { query: activity, per_page: 1 },
+          })
+          .then((response) => {
+            const photoUrl = response.data.photos[0]?.src?.medium || '';
+            setImages((prev) => ({ ...prev, [activity]: photoUrl }));
+          })
+          .catch((error) => console.error(`Error fetching image for ${activity}:`, error));
+      });
+    }
+  }, [temperature]);
 
   if (!weatherCondition || !temperature) {
-    return <div>No weather data available to suggest activities.</div>;
+    return <div style={{ textAlign: 'center', color: 'white' }}>No weather data available to suggest activities.</div>;
   }
 
   return (
@@ -62,14 +76,21 @@ const ActivitiesPage = () => {
                 padding: '20px',
                 maxWidth: '200px',
                 textAlign: 'center',
+                backgroundColor: '#1e1e1e',
               }}
             >
               <img
-                src={activity.image}
-                alt={activity.name}
-                style={{ width: '100%', height: '150px', borderRadius: '10px', marginBottom: '10px' }}
+                src={images[activity] || 'https://via.placeholder.com/150'}
+                alt={activity}
+                style={{
+                  width: '100%',
+                  height: '150px',
+                  borderRadius: '10px',
+                  marginBottom: '10px',
+                  objectFit: 'cover',
+                }}
               />
-              <h3>{activity.name}</h3>
+              <h3>{activity}</h3>
             </div>
           ))
         ) : (
