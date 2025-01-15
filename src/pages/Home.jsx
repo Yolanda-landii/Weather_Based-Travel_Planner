@@ -8,7 +8,6 @@ import styled, { createGlobalStyle } from 'styled-components';
 
 import backgroundImage from '../assets/background1.jpg';
 
-// GlobalStyle for body background
 const GlobalStyle = createGlobalStyle`
   body {
     background: url(${backgroundImage}) no-repeat center center fixed; 

@@ -1,6 +1,6 @@
-import React from 'react'; 
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import WeatherCard from '../components/WeatherCard'; 
+import WeatherCard from '../components/WeatherCard';
 
 const WeatherInfo = () => {
   const location = useLocation();
@@ -66,6 +66,10 @@ const WeatherInfo = () => {
     backgroundColor: '#003366',
   };
 
+  const handleActivitiesClick = () => {
+    navigate('/activities', { state: { weatherCondition: currentWeather.condition, temperature: currentWeather.temperature } });
+  };
+
   return (
     <div className="weather-info" style={containerStyle}>
       <h1 style={headingStyle}>{weatherData.locationName}</h1>
@@ -82,7 +86,7 @@ const WeatherInfo = () => {
         <div className="forecast-cards" style={forecastContainerStyle}>
           {forecast.length > 0 ? (
             forecast.map((forecastItem, index) => (
-              <WeatherCard 
+              <WeatherCard
                 key={index}
                 date={forecastItem.date || 'N/A'}
                 temperature={forecastItem.temperature[0] || 'N/A'}
@@ -95,13 +99,13 @@ const WeatherInfo = () => {
         </div>
       </div>
 
-      <button 
-        onClick={() => navigate('/map-view', { state: { weatherData } })} 
+      <button
+        onClick={handleActivitiesClick}
         style={buttonStyle}
         onMouseEnter={(e) => e.target.style.backgroundColor = buttonHoverStyle.backgroundColor}
         onMouseLeave={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
       >
-        View on Map
+        View Available Activities
       </button>
     </div>
   );
