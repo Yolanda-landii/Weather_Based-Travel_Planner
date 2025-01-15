@@ -78,7 +78,7 @@ const WeatherInfo = () => {
       </div>
 
       <div className="forecast" style={sectionStyle}>
-        <h2 style={subheadingStyle}>6-Day Forecast</h2>
+        <h2 style={subheadingStyle}>Weather Forecast</h2>
         <div className="forecast-cards" style={forecastContainerStyle}>
           {forecast.length > 0 ? (
             forecast.map((forecastItem, index) => (
