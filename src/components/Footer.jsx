@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; 
 import styled from 'styled-components';
 
 const FooterContainer = styled.div`
@@ -6,8 +6,20 @@ const FooterContainer = styled.div`
   color: #fff;
   padding: 10px;
   text-align: center;
-  margin-top: 30px;
   width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    padding: 6px;
+  }
 `;
 
 const Footer = () => {

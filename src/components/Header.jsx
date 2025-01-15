@@ -2,10 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 
 const HeaderContainer = styled.header`
-  width: 100%;
+  width: 100vw; /* Ensures the header spans the full viewport width */
   background-color: rgba(0, 0, 0, 0.8);
-  padding: 20px;
-  border-radius: 10px;
+  padding: 20px 0; /* Adjust padding as needed */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
