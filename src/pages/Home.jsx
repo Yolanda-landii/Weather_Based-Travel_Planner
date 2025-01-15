@@ -92,34 +92,35 @@ const HomePage = () => {
   };
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    if (!isFormValid()) {
-      setError('Please fill out all fields.');
-      return;
-    }
+  e.preventDefault();
+  if (!isFormValid()) {
+    setError('Please fill out all fields.');
+    return;
+  }
 
-    setLoading(true);
-    setError(null);
+  setLoading(true);
+  setError(null);
 
-    try {
-      const weatherResponse = await axios.get(
-        `http://localhost:5000/api/weather/${formData.location}`,
-        {
-          params: {
-            destination: formData.destination,
-            date: formData.date,
-          },
-        }
-      );
+  try {
+    const weatherResponse = await axios.get(
+      `https://travelplanner-server-ejc2.onrender.com/api/weather/${formData.location}`, // Updated URL
+      {
+        params: {
+          destination: formData.destination,
+          date: formData.date,
+        },
+      }
+    );
 
-      setWeatherData(weatherResponse.data);
-      navigate('/weather-info', { state: { weatherData: weatherResponse.data } });
-    } catch (err) {
-      setError('Error fetching data, please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    setWeatherData(weatherResponse.data);
+    navigate('/weather-info', { state: { weatherData: weatherResponse.data } });
+  } catch (err) {
+    setError('Error fetching data, please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <>
