@@ -17,6 +17,12 @@ const WeatherInfo = () => {
     return <div>No current weather data available.</div>;
   }
 
+  const openMap = () => {
+    const query = weatherData.locationName.replace(' ', '+');
+    const mapUrl = `https://www.openstreetmap.org/search?query=${query}`;
+    window.open(mapUrl, '_blank', 'noopener,noreferrer');
+  };
+
   const containerStyle = {
     backgroundColor: '#121212',
     color: 'white',
@@ -29,6 +35,9 @@ const WeatherInfo = () => {
     textAlign: 'center',
     fontSize: '2.5em',
     marginBottom: '20px',
+    color: '#F4C561',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   };
 
   const sectionStyle = {
@@ -39,6 +48,9 @@ const WeatherInfo = () => {
     fontSize: '1.8em',
     marginBottom: '15px',
     textAlign: 'center',
+    color: '#F4C561',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   };
 
   const forecastContainerStyle = {
@@ -49,21 +61,18 @@ const WeatherInfo = () => {
     marginTop: '20px',
   };
 
-  const buttonStyle = {
+  const topButtonStyle = {
     backgroundColor: '#004AAD',
     color: 'white',
     padding: '10px 20px',
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
-    fontSize: '1.2em',
+    fontSize: '1em',
     display: 'block',
-    margin: '20px auto',
+    marginLeft: '3px',
+    margin: '10px ',
     transition: 'background-color 0.3s',
-  };
-
-  const buttonHoverStyle = {
-    backgroundColor: '#003366',
   };
 
   const handleActivitiesClick = () => {
@@ -73,8 +82,17 @@ const WeatherInfo = () => {
   return (
     <div className="weather-info" style={containerStyle}>
       <h1 style={headingStyle}>{weatherData.locationName}</h1>
+
       <div className="current-weather" style={sectionStyle}>
         <h2 style={subheadingStyle}>Current Weather</h2>
+        <button
+          onClick={openMap}
+          style={topButtonStyle}
+          onMouseEnter={(e) => (e.target.style.backgroundColor = '#003366')}
+          onMouseLeave={(e) => (e.target.style.backgroundColor = '#004AAD')}
+        >
+          Open Location on Map
+        </button>
         <p>Temperature: {currentWeather.temperature ? `${currentWeather.temperature}°C` : 'N/A'}</p>
         <p>Humidity: {currentWeather.humidity ? `${currentWeather.humidity}%` : 'N/A'}</p>
         <p>Wind Speed: {currentWeather.windSpeed ? `${currentWeather.windSpeed} m/s` : 'N/A'}</p>
@@ -101,9 +119,20 @@ const WeatherInfo = () => {
 
       <button
         onClick={handleActivitiesClick}
-        style={buttonStyle}
-        onMouseEnter={(e) => e.target.style.backgroundColor = buttonHoverStyle.backgroundColor}
-        onMouseLeave={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
+        style={{
+          backgroundColor: '#004AAD',
+          color: 'white',
+          padding: '10px 20px',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          fontSize: '1.2em',
+          display: 'block',
+          margin: '20px auto',
+          transition: 'background-color 0.3s',
+        }}
+        onMouseEnter={(e) => (e.target.style.backgroundColor = '#003366')}
+        onMouseLeave={(e) => (e.target.style.backgroundColor = '#004AAD')}
       >
         View Available Activities
       </button>
